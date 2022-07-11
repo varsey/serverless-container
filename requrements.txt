@@ -1,0 +1,11 @@
+sanic~=22.3.2
+yargy~=0.15.0
+eml-parser~=1.17.0
+tqdm~=4.64
+python-docx~=0.8.11
+docx2txt~=0.8
+google-api-python-client~=2.48.0
+google-auth-httplib2~=0.1.0
+google-auth-oauthlib~=0.5.1
+html2text~=2020.1.16
+natasha~=1.4.0
