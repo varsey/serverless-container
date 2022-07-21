@@ -7,8 +7,6 @@ from docx import Document
 from parsers import Parsers
 from .Worker import Worker
 
-docx_ext = '.docx'
-
 
 class Processor:
 
@@ -16,6 +14,7 @@ class Processor:
         self.tmp_fldr = os.getcwd() + '/temp/'
         self.worker = worker
         self.log = self.worker.logger
+        self.docx_ext = '.docx'
 
     @staticmethod
     def attach_extention_check(attach_name):
@@ -30,11 +29,10 @@ class Processor:
     def attach_name_check(attach_name):
         return ('тз' not in attach_name.lower().split(' ')  and 'заяв' not in attach_name.lower())
 
-    @staticmethod
-    def parse_docx(attachment_path):
+    def parse_docx(self, attachment_path):
         """Parser via python-docx"""
         full_text = ''
-        document = Document(''.join(attachment_path.split('.')[:-1]) + docx_ext)
+        document = Document(''.join(attachment_path.split('.')[:-1]) + self.docx_ext)
         if len(document.tables) > 0:
             for table_count, _ in enumerate(document.tables):
                 table = document.tables[table_count]
@@ -49,7 +47,7 @@ class Processor:
 
         if len(full_text) == 0:
             extracted_list = []
-            for x in docx2txt.process(''.join(attachment_path.split('.')[:-1]) + docx_ext).split():
+            for x in docx2txt.process(''.join(attachment_path.split('.')[:-1]) + self.docx_ext).split():
                 if x not in extracted_list:
                     extracted_list.append(x)
             return ' '.join(extracted_list)
@@ -81,13 +79,6 @@ class Processor:
         self.log.info(f'{attach_names}')
         return attach_names
 
-    def get_message_text(self, parsed_eml):
-        message_text = ''
-        header_from = parsed_eml['header']['header']['from'][0]
-        if len(parsed_eml['body']) > 0:
-            message_text += html2text.html2text(parsed_eml['body'][-1]['content'])
-        return message_text, header_from
-
     def convert_attachment_file(self, attach_name: str):
         os.makedirs(self.tmp_fldr, exist_ok=True)
         attachment_path = f'{self.tmp_fldr}/{attach_name}'
@@ -115,18 +106,13 @@ class Processor:
             'r_account': [r_account if len(r_account) == 20 else r_account + '*'][0],
             'c_account': [corr_account if len(corr_account) == 20 else corr_account + '*'][0],
             'email': email,
-            "person_fname": first,
-            "person_pname": middle,
-            "person_sname": last,
+            "first": first,
+            "middle": middle,
+            "last": last,
             "phone": tel,
             "website": website,
             "address": address,
-            "bank": "",
-            "kpp": "",
-            "ogrn": "",
-            "okato": ""
         }
-
 
     def file_parsing(self, message_text, attach_texts, header_from):
         organization_dict, result = {}, []
@@ -159,3 +145,10 @@ class Processor:
             result.append(organization_dict)
 
             return result
+
+    def get_message_text(self, parsed_eml):
+        message_text = ''
+        header_from = parsed_eml['header']['header']['from'][0]
+        if len(parsed_eml['body']) > 0:
+            message_text += html2text.html2text(parsed_eml['body'][-1]['content'])
+        return message_text, header_from

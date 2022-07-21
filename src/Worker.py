@@ -16,7 +16,7 @@ class Worker:
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(logging.Formatter(self.LOG_FORMAT))
         logger.addHandler(handler)
-        self.logs_filename = logs_filename
+        self.logs_file = logs_filename
         self.logger = logger
 
     def error_processor(self, ex: Exception) -> None:

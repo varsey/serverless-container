@@ -3,8 +3,6 @@ import imaplib
 import eml_parser
 from .Processor import Processor
 
-docx_ext = '.docx'
-
 
 class ProcessorServer(Processor):
     # EMAIL MESSAGE
@@ -12,7 +10,7 @@ class ProcessorServer(Processor):
 
         def _parsing_wrapper(attachment_path):
             full_text = ''
-            docx_file = ''.join(attachment_path.split('.')[:-1]) + docx_ext
+            docx_file = ''.join(attachment_path.split('.')[:-1]) + self.docx_ext
             csv_file = ''.join(attachment_path.split('.')[:-1]) + '.csv'
             if os.path.isfile(docx_file):
                 full_text = self.parse_docx(docx_file)
@@ -23,7 +21,7 @@ class ProcessorServer(Processor):
             return full_text
 
         ep = eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
-        email, message_text = '', ''
+        email, message_text, header_from = '', '', ''
         att_text, attach_name, attach_names, full_texts, attach_texts = '', '', [], [], {}
         for response_part in data:
             if isinstance(response_part, tuple):

@@ -2,8 +2,6 @@ import os
 import eml_parser
 from .Processor import Processor
 
-docx_ext = '.docx'
-
 
 class ProcessorLocal(Processor):
     # EML FILE
@@ -16,7 +14,7 @@ class ProcessorLocal(Processor):
         for attach_name in attach_names:
             try:
                 attachment_path = self.convert_attachment_file(attach_name)
-                if os.path.isfile(''.join(attachment_path.split('.')[:-1]) + docx_ext):
+                if os.path.isfile(''.join(attachment_path.split('.')[:-1]) + self.docx_ext):
                     full_text = self.parse_docx(attachment_path)
                 else:
                     full_text = self.parse_csv(attachment_path)
